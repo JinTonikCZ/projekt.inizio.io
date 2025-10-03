@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <title>Search Extractor – 1st page results</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif;line-height:1.45;margin:24px;background:#0b1020;color:#f1f5ff}
+    h1{font-size:20px;margin:0 0 16px}
+    .card{background:#12193a;border:1px solid #1e2a5a;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+    .row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+    input,button,select{border-radius:10px;border:1px solid #2b386f;background:#0c1433;color:#e8edff;padding:10px 12px}
+    input{flex:1;min-width:260px}
+    button{cursor:pointer}
+    .muted{opacity:.8}
+    .result{padding:10px;border-bottom:1px dashed #2b386f}
+    .result:last-child{border-bottom:none}
+    a{color:#8dd0ff;text-decoration:none}
+    .pill{display:inline-block;padding:4px 8px;border:1px solid #2b386f;border-radius:999px;font-size:12px;margin-right:6px}
+    .ok{color:#4ade80}
+    .fail{color:#f87171}
+    pre{white-space:pre-wrap;background:#0c1433;border-radius:8px;padding:10px;overflow:auto}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Search Extractor – 1st page results</h1>
+    <div class="row">
+      <input id="q" type="text" placeholder="Zadejte klíčové slovo…" />
+      <select id="mode">
+        <option value="mock">MOCK (bez API)</option>
+        <option value="google">Google CSE API</option>
+      </select>
+      <button id="run">Hledat</button>
+      <button id="dlJson" title="Uložit JSON">⬇ JSON</button>
+      <button id="dlCsv" title="Uložit CSV">⬇ CSV</button>
+    </div>
+    <div class="muted">
+      <span class="pill">Strukturovaný výstup: <code>{ title, link, snippet }</code></span>
+      <span class="pill">Unit testy: níže</span>
+      <span class="pill">1. strana – organické výsledky</span>
+    </div>
+  </div>
+
+  <div class="card" id="out"><em>Zde se zobrazí výsledky…</em></div>
+
+  <div class="card">
+    <h2 style="margin-top:0">Unit testy</h2>
+    <div id="tests"></div>
+  </div>
+
+<script>
+/* =========================
+   1) Nastavení API (pokud chceš reálný fetch)
+   - Vytvoř si na https://programmablesearchengine.google.com/ vlastní CSE
+   - Získej CX (ID vyhledávače) a API klíč (Google Cloud Console)
+   - Vlož do proměnných níže.
+   ========================= */
+const GOOGLE_API_KEY = "";   // <-- sem vlož svůj API key (nebo nech prázdné pro MOCK)
+const GOOGLE_CX      = "";   // <-- sem vlož své CX (CSE ID)
+
+/* =========================
+   2) Pomocné funkce
+   ========================= */
+const $ = sel => document.querySelector(sel);
+
+function download(filename, text) {
+  const blob = new Blob([text], {type: 'application/octet-stream'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function toCSV(rows){
+  const esc = s => `"${String(s??"").replace(/"/g,'""')}"`;
+  const header = ["title","link","snippet"];
+  const lines = [header.join(",")];
+  rows.forEach(r=>lines.push([esc(r.title),esc(r.link),esc(r.snippet)].join(",")));
+  return lines.join("\n");
+}
+
+/* =========================
+   3) MOCK data (bez API, pro demo a testy)
+   ========================= */
+const MOCK_RESULTS = [
+  { title: "Example — Domain",
+    link: "https://example.com/",
+    snippet: "This domain is for use in illustrative examples in documents." },
+  { title: "MDN Web Docs",
+    link: "https://developer.mozilla.org/",
+    snippet: "Resources for developers, by developers." },
+  { title: "W3C",
+    link: "https://www.w3.org/",
+    snippet: "The World Wide Web Consortium (W3C) develops standards." }
+];
+
+/* =========================
+   4) Hledání – dva režimy
+   ========================= */
+async function searchGoogleCSE(query){
+  if(!GOOGLE_API_KEY || !GOOGLE_CX) throw new Error("Chybí GOOGLE_API_KEY nebo GOOGLE_CX.");
+  const url = new URL("https://www.googleapis.com/customsearch/v1");
+  url.searchParams.set("key", GOOGLE_API_KEY);
+  url.searchParams.set("cx",  GOOGLE_CX);
+  url.searchParams.set("q",   query);
+  // Můžeme omezit typy výsledků (např. vyloučit reklamu – CSE vrací organic items)
+  const resp = await fetch(url);
+  if(!resp.ok) throw new Error("Google API error: " + resp.status);
+  const data = await resp.json();
+  const items = (data.items || []);
+  return items.map(it => ({
+    title: it.title || "",
+    link: it.link || "",
+    snippet: it.snippet || it.snippetText || ""
+  }));
+}
+
+async function searchMock(query){
+  // V reálu bys tady třeba volil DuckDuckGo nebo interní demo.
+  // Pro účel testu vracíme statický výsledek + injektujeme dotaz do prvního prvku.
+  return MOCK_RESULTS.map((r,i)=> i===0 ? ({...r, title: `${r.title} — ${query}`}) : r);
+}
+
+/* =========================
+   5) UI obsluha
+   ========================= */
+let lastResults = [];
+
+async function runSearch(){
+  const q = $("#q").value.trim();
+  if(!q){ $("#out").innerHTML = "<em>Zadejte dotaz…</em>"; return; }
+  $("#out").innerHTML = "<em>Hledám…</em>";
+
+  const mode = $("#mode").value;
+  try{
+    const results = mode === "google" ? await searchGoogleCSE(q) : await searchMock(q);
+    lastResults = results;
+    renderResults(results);
+  }catch(e){
+    $("#out").innerHTML = `<div style="color:#f87171">Chyba: ${e.message}</div>`;
+  }
+}
+
+function renderResults(list){
+  if(!list.length){ $("#out").innerHTML = "<em>Žádné výsledky.</em>"; return; }
+  const html = list.map(item => `
+    <div class="result">
+      <div><a href="${item.link}" target="_blank" rel="noreferrer">${item.title}</a></div>
+      <div class="muted" style="font-size:13px">${item.link}</div>
+      <div>${item.snippet}</div>
+    </div>
+  `).join("");
+  $("#out").innerHTML = html;
+}
+
+$("#run").addEventListener("click", runSearch);
+$("#q").addEventListener("keydown", e => { if(e.key==="Enter") runSearch(); });
+$("#dlJson").addEventListener("click", ()=> {
+  if(!lastResults.length) return;
+  download("results.json", JSON.stringify(lastResults, null, 2));
+});
+$("#dlCsv").addEventListener("click", ()=> {
+  if(!lastResults.length) return;
+  download("results.csv", toCSV(lastResults));
+});
+
+/* =========================
+   6) Mini unit-test runner (bez knihoven)
+   ========================= */
+const tests = [];
+function test(name, fn){ tests.push({name, fn}); }
+function expect(val){
+  return {
+    toBeTruthy(){ if(!val) throw new Error("Expected truthy, got "+val); },
+    toBeType(t){ if(typeof val!==t) throw new Error(`Expected type ${t}, got ${typeof val}`); },
+    toHaveKeys(keys){ keys.forEach(k=>{ if(!(k in val)) throw new Error(`Missing key: ${k}`);}); },
+    toBeArray(){ if(!Array.isArray(val)) throw new Error("Expected array"); }
+  };
+}
+
+test("searchMock vrací pole s 3 prvky", async ()=>{
+  const res = await searchMock("test");
+  expect(res).toBeArray();
+  if(res.length !== 3) throw new Error("Expected length=3");
+});
+
+test("výsledek má správný tvar {title, link, snippet}", async ()=>{
+  const [first] = await searchMock("abc");
+  expect(first).toHaveKeys(["title","link","snippet"]);
+  expect(first.title).toBeType("string");
+  expect(first.link).toBeType("string");
+});
+
+test("CSV export nevrací prázdný řetězec", async ()=>{
+  const res = await searchMock("csv");
+  const csv = toCSV(res);
+  expect(csv).toBeTruthy();
+});
+
+async function runTests(){
+  const container = $("#tests");
+  let passed = 0;
+  for(const t of tests){
+    const row = document.createElement("div");
+    row.className = "result";
+    try{
+      await t.fn();
+      row.innerHTML = `<span class="ok">✔</span> ${t.name}`;
+      passed++;
+    }catch(e){
+      row.innerHTML = `<span class="fail">✖</span> ${t.name} — <span class="muted">${e.message}</span>`;
+    }
+    container.appendChild(row);
+  }
+  const summary = document.createElement("div");
+  summary.style.marginTop = "8px";
+  summary.innerHTML = `<strong>${passed}/${tests.length}</strong> testů prošlo.`;
+  container.appendChild(summary);
+}
+runTests();
+</script>
+</body>
+</html>
