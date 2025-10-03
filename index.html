@@ -1,22 +1,43 @@
 <!doctype html>
-<html lang="cs">
+<html lang="cs" data-theme="dark">
 <head>
-  <meta charset="utf-8">
-  <title>Google CSE Extractor</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <title>Search Extractor – 1st page results</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Vyhledávání přes Google CSE API</h1>
-  <input id="q" placeholder="Zadejte dotaz...">
-  <button onclick="runSearch()">Hledat</button>
-  <button onclick="downloadJSON()">⬇ JSON</button>
-  <button onclick="downloadCSV()">⬇ CSV</button>
+  <header class="topbar">
+    <h1>Search Extractor – 1st page results</h1>
+    <div class="topbar-actions">
+      <button id="themeToggle" class="btn-ghost" aria-label="Přepnout téma">🌙</button>
+    </div>
+  </header>
 
-  <h2>Výsledky:</h2>
-  <div id="out"><em>Zatím nic...</em></div>
+  <div class="card">
+    <div class="row">
+      <input id="q" type="text" placeholder="Zadejte klíčové slovo…" />
+      <select id="mode" title="Režim">
+        <option value="mock">MOCK (bez API)</option>
+        <option value="google">Google CSE API</option>
+      </select>
+      <button id="run">Hledat</button>
+      <button id="dlJson" title="Uložit JSON">⬇ JSON</button>
+      <button id="dlCsv" title="Uložit CSV">⬇ CSV</button>
+    </div>
+    <div class="muted pills">
+      <span class="pill">Strukturovaný výstup: <code>{ title, link, snippet }</code></span>
+      <span class="pill">Unit testy: níže</span>
+      <span class="pill">1. strana – organické výsledky</span>
+    </div>
+  </div>
 
-  <h2>Unit test</h2>
-  <div id="tests"></div>
+  <div class="card" id="out"><em>Zde se zobrazí výsledky…</em></div>
+
+  <div class="card">
+    <h2 class="h2">Unit testy</h2>
+    <div id="tests"></div>
+  </div>
 
   <script src="app.js"></script>
 </body>

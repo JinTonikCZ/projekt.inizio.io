@@ -1,29 +1,51 @@
-body {
-  font-family: sans-serif;
-  margin: 30px;
-  background: #f4f6fa;
-}
-
-h1 {
-  font-size: 18px;
-}
-
-input, button {
-  padding: 8px;
-  margin: 5px;
-}
-
-.result {
-  margin-bottom: 12px;
-  padding: 10px;
-  background: #fff;
-  border-radius: 6px;
-}
-
-.ok {
-  color: green;
-}
-
-.fail {
-  color: red;
-}
+/* ---------- Témata (CSS proměnné) ---------- */
+:root{
+    /* light */
+    --bg:#f6f7fb; --card:#ffffff; --border:#e3e6ef; --text:#0e1320; --muted:#5b6478;
+    --link:#0d6efd; --chip:#eef1f7; --shadow:0 8px 24px rgba(16,24,40,.08);
+  }
+  :root[data-theme="dark"]{
+    /* dark */
+    --bg:#0b1020; --card:#12193a; --border:#1e2a5a; --text:#f1f5ff; --muted:#a5b4fc;
+    --link:#8dd0ff; --chip:#0c1433; --shadow:0 8px 24px rgba(0,0,0,.25);
+  }
+  
+  /* ---------- Základ ---------- */
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:24px;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif;
+    line-height:1.45; background:var(--bg); color:var(--text);
+  }
+  
+  /* ---------- Header ---------- */
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  h1{font-size:20px;margin:0}
+  .topbar-actions{display:flex;gap:8px}
+  .btn-ghost{border:1px solid var(--border);background:var(--chip);padding:8px 10px;border-radius:10px;cursor:pointer}
+  
+  /* ---------- Karty a layout ---------- */
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:var(--shadow)}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .h2{margin:0 0 8px}
+  
+  input,button,select{
+    border-radius:10px;border:1px solid var(--border);
+    background:var(--chip);color:var(--text);padding:10px 12px
+  }
+  input{flex:1;min-width:260px}
+  button{cursor:pointer}
+  
+  .muted{opacity:.85;color:var(--muted)}
+  .pills .pill{display:inline-block;padding:4px 8px;border:1px solid var(--border);border-radius:999px;font-size:12px;margin-right:6px;background:var(--chip)}
+  
+  .result{padding:10px;border-bottom:1px dashed var(--border)}
+  .result:last-child{border-bottom:none}
+  a{color:var(--link);text-decoration:none}
+  a:hover{text-decoration:underline}
+  
+  .ok{color:#12b76a}
+  .fail{color:#ef4444}
+  pre{white-space:pre-wrap;background:var(--chip);border-radius:8px;padding:10px;overflow:auto}
+  
