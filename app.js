@@ -1,82 +1,127 @@
-const API_KEY = "AIzaSyDBT4rqwNESvf2NVvvserDvUTQac2g6lGs";   // ← сюда вставь свой ключ
-const CX = "b6e841a9585054492";        // ← твой CX ID
+// ===== 0) Téma (light/dark) =====
+const THEME_KEY = "se-theme";
+function getSystemTheme(){ return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; }
+function applyTheme(theme){
+  document.documentElement.setAttribute("data-theme", theme);
+  const icon = theme === "dark" ? "🌙" : "☀️";
+  document.getElementById("themeToggle").textContent = icon;
+}
+(function initTheme(){
+  const saved = localStorage.getItem(THEME_KEY);
+  applyTheme(saved || getSystemTheme());
+})();
+document.getElementById("themeToggle").addEventListener("click", ()=>{
+  const cur = document.documentElement.getAttribute("data-theme");
+  const next = cur === "dark" ? "light" : "dark";
+  applyTheme(next); localStorage.setItem(THEME_KEY, next);
+});
+
+// ===== 1) Google CSE API nastavení =====
+const API_KEY = "AIzaSyDBT4rqwNESvf2NVvvserDvUTQac2g6lGs";   // <-- sem vlož svůj klíč
+const CX      = "b6e841a9585054492";   // <-- tvůj CSE ID (CX)
 let lastResults = [];
 
-// 1) vyhledávání
-async function searchGoogle(q) {
-  const url = `https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${CX}&q=${encodeURIComponent(q)}`;
+// ===== 2) Pomocné funkce =====
+const $ = (s)=>document.querySelector(s);
+function download(filename, text, mime="application/octet-stream"){
+  const blob = new Blob([text], {type:mime});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a"); a.href=url; a.download=filename; a.click();
+  URL.revokeObjectURL(url);
+}
+function toCSV(rows){
+  const esc = (s)=> `"${String(s??"").replace(/"/g,'""')}"`;
+  const header = ["title","link","snippet"];
+  const lines = [header.join(",")];
+  rows.forEach(r=>lines.push([esc(r.title),esc(r.link),esc(r.snippet)].join(",")));
+  return lines.join("\n");
+}
+
+// ===== 3) MOCK režim =====
+const MOCK_RESULTS = [
+  { title: "Example — Domain", link: "https://example.com/", snippet: "This domain is for use in illustrative examples in documents." },
+  { title: "MDN Web Docs", link: "https://developer.mozilla.org/", snippet: "Resources for developers, by developers." },
+  { title: "W3C", link: "https://www.w3.org/", snippet: "The World Wide Web Consortium (W3C) develops standards." }
+];
+async function searchMock(q){
+  return MOCK_RESULTS.map((r,i)=> i===0 ? ({...r, title:`${r.title} — ${q}`}) : r);
+}
+
+// ===== 4) Google CSE API =====
+async function searchGoogle(q){
+  if(!API_KEY || !CX) throw new Error("Chyba: Chybí GOOGLE_API_KEY nebo GOOGLE_CX.");
+  const url = new URL("https://www.googleapis.com/customsearch/v1");
+  url.searchParams.set("key", API_KEY);
+  url.searchParams.set("cx",  CX);
+  url.searchParams.set("q",   q);
+
   const res = await fetch(url);
-  if (!res.ok) throw new Error("API error: " + res.status);
+  if(!res.ok){
+    const txt = await res.text();
+    throw new Error(`API error: ${res.status} — ${txt}`);
+  }
   const data = await res.json();
   return (data.items || []).map(it => ({
-    title: it.title,
-    link: it.link,
-    snippet: it.snippet
+    title: it.title || "", link: it.link || "", snippet: it.snippet || it.snippetText || ""
   }));
 }
 
-// 2) spuštění hledání
-async function runSearch() {
-  const q = document.getElementById("q").value;
-  document.getElementById("out").innerHTML = "<em>Načítám...</em>";
-  try {
-    const results = await searchGoogle(q);
-    lastResults = results;
-    renderResults(results);
-  } catch (e) {
-    document.getElementById("out").innerHTML = "<span style='color:red'>" + e.message + "</span>";
-  }
-}
-
-// 3) vykreslení výsledků
-function renderResults(list) {
-  if (!list.length) {
-    document.getElementById("out").innerHTML = "<em>Žádné výsledky.</em>";
-    return;
-  }
-  document.getElementById("out").innerHTML = list.map(r => `
+// ===== 5) UI a exporty =====
+function renderResults(list){
+  if(!list.length){ $("#out").innerHTML = "<em>Žádné výsledky.</em>"; return; }
+  $("#out").innerHTML = list.map(item => `
     <div class="result">
-      <strong><a href="${r.link}" target="_blank">${r.title}</a></strong><br>
-      <small>${r.link}</small><br>
-      <p>${r.snippet}</p>
+      <div><a href="${item.link}" target="_blank" rel="noreferrer">${item.title}</a></div>
+      <div class="muted" style="font-size:13px">${item.link}</div>
+      <div>${item.snippet}</div>
     </div>
   `).join("");
 }
 
-// 4) JSON export
-function downloadJSON() {
-  if (!lastResults.length) return;
-  const blob = new Blob([JSON.stringify(lastResults, null, 2)], {type: "application/json"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "results.json";
-  a.click();
-}
-
-// 5) CSV export
-function downloadCSV() {
-  if (!lastResults.length) return;
-  const header = "title,link,snippet\n";
-  const rows = lastResults.map(r => `"${r.title}","${r.link}","${r.snippet}"`).join("\n");
-  const blob = new Blob([header + rows], {type: "text/csv"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "results.csv";
-  a.click();
-}
-
-// 6) unit test
-async function runTests() {
-  const testsDiv = document.getElementById("tests");
-  try {
-    const res = await searchGoogle("test");
-    if (Array.isArray(res) && res.length > 0 && res[0].title) {
-      testsDiv.innerHTML = "<div class='ok'>✔ API vrací výsledky ve správném formátu</div>";
-    } else {
-      throw new Error("Výstup je prázdný nebo nesprávný");
-    }
-  } catch (e) {
-    testsDiv.innerHTML = "<div class='fail'>✖ Test selhal: " + e.message + "</div>";
+async function runSearch(){
+  const q = $("#q").value.trim();
+  if(!q){ $("#out").innerHTML = "<em>Zadejte dotaz…</em>"; return; }
+  $("#out").innerHTML = "<em>Načítám…</em>";
+  try{
+    const mode = $("#mode").value;
+    const results = (mode === "mock") ? await searchMock(q) : await searchGoogle(q);
+    lastResults = results; renderResults(results);
+  }catch(e){
+    $("#out").innerHTML = `<div class="fail">${e.message}</div>`;
   }
 }
-runTests();
+
+$("#run").addEventListener("click", runSearch);
+$("#q").addEventListener("keydown", (e)=>{ if(e.key==="Enter") runSearch(); });
+$("#dlJson").addEventListener("click", ()=>{ if(lastResults.length) download("results.json", JSON.stringify(lastResults,null,2), "application/json"); });
+$("#dlCsv").addEventListener("click",  ()=>{ if(lastResults.length) download("results.csv", toCSV(lastResults), "text/csv"); });
+
+// ===== 6) Mini unit-test runner (na MOCK) =====
+const tests = [];
+function test(name, fn){ tests.push({name, fn}); }
+function expect(val){
+  return {
+    toBeTruthy(){ if(!val) throw new Error("Expected truthy, got "+val); },
+    toBeArray(){ if(!Array.isArray(val)) throw new Error("Expected array"); },
+    toHaveKeys(keys){ keys.forEach(k=>{ if(!(k in val)) throw new Error("Missing key: "+k); }); },
+    toBeType(t){ if(typeof val!==t) throw new Error(`Expected type ${t}, got ${typeof val}`); },
+  };
+}
+test("searchMock vrací pole s 3 prvky", async ()=>{
+  const res = await searchMock("demo"); expect(res).toBeArray(); if(res.length!==3) throw new Error("Expected length=3");
+});
+test("výsledek má tvar {title, link, snippet}", async ()=>{
+  const [first] = await searchMock("demo");
+  expect(first).toHaveKeys(["title","link","snippet"]); expect(first.title).toBeType("string");
+});
+(async function runTests(){
+  const box = $("#tests"); let passed = 0;
+  for(const t of tests){
+    const row = document.createElement("div"); row.className = "result";
+    try{ await t.fn(); row.innerHTML = `<span class="ok">✔</span> ${t.name}`; passed++; }
+    catch(e){ row.innerHTML = `<span class="fail">✖</span> ${t.name} — <span class="muted">${e.message}</span>`; }
+    box.appendChild(row);
+  }
+  const sum = document.createElement("div"); sum.style.marginTop="8px";
+  sum.innerHTML = `<strong>${passed}/${tests.length}</strong> testů prošlo.`; box.appendChild(sum);
+})();
