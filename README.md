@@ -1,0 +1,3 @@
+# test projekt pro inizio 
+...
+Popíšu tento redmy, pokud nezapomenu xd )) 
