@@ -1,0 +1,29 @@
+body {
+  font-family: sans-serif;
+  margin: 30px;
+  background: #f4f6fa;
+}
+
+h1 {
+  font-size: 18px;
+}
+
+input, button {
+  padding: 8px;
+  margin: 5px;
+}
+
+.result {
+  margin-bottom: 12px;
+  padding: 10px;
+  background: #fff;
+  border-radius: 6px;
+}
+
+.ok {
+  color: green;
+}
+
+.fail {
+  color: red;
+}

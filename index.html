@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <title>Google CSE Extractor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Vyhledávání přes Google CSE API</h1>
+  <input id="q" placeholder="Zadejte dotaz...">
+  <button onclick="runSearch()">Hledat</button>
+  <button onclick="downloadJSON()">⬇ JSON</button>
+  <button onclick="downloadCSV()">⬇ CSV</button>
+
+  <h2>Výsledky:</h2>
+  <div id="out"><em>Zatím nic...</em></div>
+
+  <h2>Unit test</h2>
+  <div id="tests"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
