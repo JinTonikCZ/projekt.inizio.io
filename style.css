@@ -48,4 +48,16 @@
   .ok{color:#12b76a}
   .fail{color:#ef4444}
   pre{white-space:pre-wrap;background:var(--chip);border-radius:8px;padding:10px;overflow:auto}
-  
+
+  .photo-wrapper {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.center-photo {
+  max-width: 600px;   /* ограничение по ширине */
+  width: 100%;
+  border-radius: 12px; /* скругление углов */
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+}
