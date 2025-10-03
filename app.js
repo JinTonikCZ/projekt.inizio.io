@@ -17,8 +17,8 @@ document.getElementById("themeToggle").addEventListener("click", ()=>{
 });
 
 // ===== 1) Google CSE API nastavení =====
-const API_KEY = "AIzaSyDBT4rqwNESvf2NVvvserDvUTQac2g6lGs";   // <-- sem vlož svůj klíč
-const CX      = "b6e841a9585054492";   // <-- tvůj CSE ID (CX)
+const API_KEY = "AIzaSyDBT4rqwNESvf2NVvvserDvUTQac2g6lGs";   
+const CX      = "b6e841a9585054492";  
 let lastResults = [];
 
 // ===== 2) Pomocné funkce =====
@@ -125,3 +125,4 @@ test("výsledek má tvar {title, link, snippet}", async ()=>{
   const sum = document.createElement("div"); sum.style.marginTop="8px";
   sum.innerHTML = `<strong>${passed}/${tests.length}</strong> testů prošlo.`; box.appendChild(sum);
 })();
+
