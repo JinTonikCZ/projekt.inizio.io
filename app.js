@@ -1,18 +1,16 @@
 /***************************************************
  * Search Extractor – main client logic
- * (c) You — for the practical test
+
  ***************************************************/
 
-/* ========== Configuration ========== */
-// Replace with your own keys if needed
+/* ========== Configuration ========== ========================================*/
+
 const API_KEY     = "AIzaSyDBT4rqwNESvf2NVvvserDvUTQac2g6lGs";
 const CX          = "b6e841a9585054492";
 const GOOGLE_URL  = "https://www.googleapis.com/customsearch/v1";
-
-// what the page prints to if no results
 let lastResults = [];
 
-/* ========== Mock data (offline / no API) ========== */
+/*============================================================================== */
 const MOCK_RESULTS = [
   {
     title: "Example — Domain",
@@ -298,4 +296,5 @@ function updateThemeButtonUI() {
   // Initial badge
   updateModeBadge();
 });
+
 
