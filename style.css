@@ -83,3 +83,28 @@
 /* после запуска поиска «герой» сжимается вверх, чтобы освободить место результатам */
 body.compact .hero{ min-height: 0; padding: 8px 0 0; }
 body.compact .brand{ display:none; }          /* по желанию скрыть заголовок */
+
+/* футер */
+.footer-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+.download-buttons {
+  display: flex;
+  gap: 8px;
+}
+.download-buttons button {
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+/* unit testy */
+#tests {
+  max-width: 600px;   /* ограничиваем ширину */
+  margin: 0 auto;     /* центрируем блок */
+  text-align: left;   /* выравнивание текста слева */
+}
+
