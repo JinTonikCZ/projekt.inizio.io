@@ -9,10 +9,10 @@
 </head>
 
 <body>
-  <!-- Переключатель темы (закреплён в углу) -->
+  <!-- Přepnout téma -->
   <button id="themeToggle" class="theme-toggle" aria-label="Přepnout téma">🌙</button>
 
-  <!-- HERO: поиск по центру экрана -->
+  <!-- HLEDANI -->
   <section class="hero" id="hero">
     <div class="container">
       <h1 class="brand">Search Extractor</h1>
@@ -28,14 +28,14 @@
     </div>
   </section>
 
-  <!-- Результаты -->
+  <!-- RESULT tlačítka -->
   <section class="section">
     <div class="container">
       <div id="out" class="card"><em>Zde se zobrazí výsledky…</em></div>
     </div>
   </section>
 
-  <!-- Unit testy (узкая колонка, слева) -->
+  <!-- Unit testy  -->
   <section class="section section--tests">
     <div class="container container--narrow">
       <h2 class="h2">Unit testy</h2>
@@ -43,7 +43,7 @@
     </div>
   </section>
 
-  <!-- Футер (кнопки скачивания справа) -->
+  <!-- FUTER -->
   <footer class="site-footer">
     <div class="container footer-grid">
       <div class="footer-brand">
@@ -53,6 +53,7 @@
 
       <div class="footer-actions">
         <div class="download-buttons">
+            <!-- RESULT tlačítka -->
           <button id="dlJson" class="btn btn--ghost" title="Uložit JSON">⬇ JSON</button>
           <button id="dlCsv"  class="btn btn--ghost" title="Uložit CSV">⬇ CSV</button>
           <button id="dlPdf"  class="btn btn--ghost" title="Uložit PDF">⬇ PDF</button>
@@ -64,11 +65,12 @@
     </div>
   </footer>
 
-  <!-- jsPDF для экспорта PDF -->
+  <!-- jsPDF EXPORT PDF -->
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <!-- Приложение -->
   <script src="app.js"></script>
 </body>
 </html>
+
 
 
