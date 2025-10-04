@@ -24,6 +24,8 @@
           <option value="google">Google CSE API</option>
           <option value="mock">MOCK (bez API)</option>
         </select>
+         <!-- бейдж режима -->
+        <span id="modeBadge" class="badge badge-google">Google CSE API</span>
       </div>
     </div>
   </section>
@@ -42,7 +44,25 @@
       <div id="tests" class="card"></div>
     </div>
   </section>
+  
+<!-- ===== VÝSLEDKY ===== -->
+  <section class="card" id="outCard">
+    <div id="out" class="muted">Zde se zobrazí výsledky…</div>
+  </section>
 
+  <!-- ===== TESTY (skryté do prvního kliknutí) ===== -->
+  <section class="card narrow hidden" id="testsCard">
+    <h2 class="h2">
+      Unit/Integration testy
+      <span id="testsScope" class="tag">—</span>
+    </h2>
+    <ul id="tests" class="tests"></ul>
+
+    <div class="tests-actions">
+      <button class="btn-ghost hidden" id="btnRunIT">Run integration test (Google)</button>
+    </div>
+  </section>
+  
   <!-- FUTER -->
   <footer class="site-footer">
     <div class="container footer-grid">
@@ -69,8 +89,16 @@
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <!-- Приложение -->
   <script src="app.js"></script>
+  <script>
+    // навесим обработчики после загрузки app.js
+    document.getElementById('btnSearch')?.addEventListener('click', runSearch);
+    document.getElementById('mode')?.addEventListener('change', updateModeUI);
+    document.getElementById('btnRunIT')?.addEventListener('click', runIntegrationTestGoogle);
+
+    // при открытии просто отрисуем бейдж режима
 </body>
 </html>
+
 
 
 
