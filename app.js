@@ -139,17 +139,27 @@ function updateThemeButton(){
 }
 
 /* Downloads */
-document.getElementById('dlJson')?.addEventListener('click', ()=>download('results.json', JSON.stringify(lastResults, null, 2)));
-document.getElementById('dlCsv') ?.addEventListener('click', ()=>download('results.csv',  toCSV(lastResults)));
-document.getElementById('dlPdf') ?.addEventListener('click', async ()=>{
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  let y = 10;
-  lastResults.forEach((r,i)=>{
-    doc.text(`${i+1}. ${r.title}`, 10, y); y+=6;
-    doc.text(`${r.link}`, 10, y); y+=6;
-    doc.text(`${(r.snippet||'').slice(0,120)}`, 10, y); y+=10;
-  });
+
+ refs.dJson?.addEventListener('click', () =>
+    download('results.json', JSON.stringify(lastResults ?? [], null, 2))
+  );
+
+  refs.dCsv?.addEventListener('click', () =>
+    download('results.csv', toCSV(lastResults ?? []))
+  );
+
+  refs.dPdf?.addEventListener('click', async () => {
+    const jsPDF = window.jspdf?.jsPDF;
+    if (!jsPDF) return alert('jsPDF není načten (CDN).');
+
+    const doc = new jsPDF();
+    let y = 10;
+
+    (lastResults ?? []).forEach((r, i) => {
+      doc.text(`${i + 1}. ${r.title}`, 10, y); y += 6;
+      doc.text(`${r.link}`, 10, y);          y += 6;
+      doc.text(`${(r.snippet || '').slice(0, 120)}`, 10, y); y += 10;
+    });
   doc.save('results.pdf');
 });
 
@@ -161,3 +171,4 @@ els.btnRunIT?.addEventListener('click', runUnitTests);
 // при загрузке — год в футере и бейдж режима
 document.getElementById('year').textContent = new Date().getFullYear();
 updateModeBadge();
+
