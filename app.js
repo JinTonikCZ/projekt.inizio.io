@@ -81,6 +81,8 @@ function renderResults(list){
 async function runSearch(){
   const q = $("#q").value.trim();
   if(!q){ $("#out").innerHTML = "<em>Zadejte dotaz…</em>"; return; }
+
+    document.body.classList.add("compact");
   $("#out").innerHTML = "<em>Načítám…</em>";
   try{
     const mode = $("#mode").value;
@@ -89,6 +91,7 @@ async function runSearch(){
   }catch(e){
     $("#out").innerHTML = `<div class="fail">${e.message}</div>`;
   }
+  
 }
 
 $("#run").addEventListener("click", runSearch);
@@ -125,4 +128,5 @@ test("výsledek má tvar {title, link, snippet}", async ()=>{
   const sum = document.createElement("div"); sum.style.marginTop="8px";
   sum.innerHTML = `<strong>${passed}/${tests.length}</strong> testů prošlo.`; box.appendChild(sum);
 })();
+
 
