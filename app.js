@@ -98,6 +98,72 @@ $("#run").addEventListener("click", runSearch);
 $("#q").addEventListener("keydown", (e)=>{ if(e.key==="Enter") runSearch(); });
 $("#dlJson").addEventListener("click", ()=>{ if(lastResults.length) download("results.json", JSON.stringify(lastResults,null,2), "application/json"); });
 $("#dlCsv").addEventListener("click",  ()=>{ if(lastResults.length) download("results.csv", toCSV(lastResults), "text/csv"); });
+// PDF Export 
+
+// ===== PDF export (jsPDF — text-only, без картинок) =====
+function downloadPDF(){
+  if(!lastResults.length) return;
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: "pt", format: "a4" }); // 72pt = 1 inch
+
+  const margin = 40;
+  const lineH = 16;
+  const maxWidth = 515; // ширина текста (A4 595pt - поля)
+  let y = margin;
+
+  // заголовок
+  doc.setFont("helvetica","bold"); doc.setFontSize(16);
+  doc.text("Search Extractor — 1st page results", margin, y); y += 24;
+
+  // дата/запрос
+  const q = $("#q").value.trim() || "(bez dotazu)";
+  doc.setFont("helvetica","normal"); doc.setFontSize(11);
+  doc.text(`Dotaz: ${q}`, margin, y); y += 18;
+
+  // элементы
+  lastResults.forEach((r, idx) => {
+    // перенос на новую страницу при нехватке места
+    const need = 3*lineH; // грубая оценка заголовка/ссылки
+    if (y + need > doc.internal.pageSize.getHeight() - margin){
+      doc.addPage(); y = margin;
+    }
+
+    // title (жирный)
+    doc.setFont("helvetica","bold"); doc.setFontSize(12);
+    const titleLines = doc.splitTextToSize(`${idx+1}. ${r.title || ""}`, maxWidth);
+    titleLines.forEach(t => { doc.text(t, margin, y); y += lineH; });
+
+    // link (серым)
+    doc.setTextColor(120); doc.setFont("helvetica","normal"); doc.setFontSize(10);
+    const linkLines = doc.splitTextToSize(r.link || "", maxWidth);
+    linkLines.forEach(t => { doc.text(t, margin, y); y += lineH; });
+    doc.setTextColor(0);
+
+    // snippet
+    doc.setFontSize(11);
+    const snipLines = doc.splitTextToSize(r.snippet || "", maxWidth);
+    snipLines.forEach(t => { 
+      if (y + lineH > doc.internal.pageSize.getHeight() - margin){
+        doc.addPage(); y = margin;
+      }
+      doc.text(t, margin, y); y += lineH; 
+    });
+
+    y += 8; // отступ между карточками
+  });
+
+  doc.save("results.pdf");
+}
+
+// слушатель на кнопку PDF
+$("#dlPdf").addEventListener("click", downloadPDF);
+
+// текущий год в футере
+document.getElementById("year").textContent = new Date().getFullYear();
+
+
+
 
 // ===== 6) Mini unit-test runner (na MOCK) =====
 const tests = [];
@@ -128,5 +194,6 @@ test("výsledek má tvar {title, link, snippet}", async ()=>{
   const sum = document.createElement("div"); sum.style.marginTop="8px";
   sum.innerHTML = `<strong>${passed}/${tests.length}</strong> testů prošlo.`; box.appendChild(sum);
 })();
+
 
 
