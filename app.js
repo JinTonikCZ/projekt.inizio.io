@@ -1,190 +1,163 @@
 /******************************************************
  * Search Extractor – hlavní logika
- * Autor: ProgramatoRR (JinTonikCZ)
  ******************************************************/
 
-/***** 1️⃣ DOM odkazy (refs) *****/
+/* DOM refs */
 const els = {
-  q: document.getElementById('q'),
-  mode: document.getElementById('mode'),
-  out: document.getElementById('out'),
-  outCard: document.getElementById('outCard'),
-  testsCard: document.getElementById('testsCard'),
-  testsList: document.getElementById('tests'),
-  btnRunIT: document.getElementById('btnRunIT'),
-  modeBadge: document.getElementById('modeBadge'),
+  q:          document.getElementById('q'),
+  mode:       document.getElementById('mode'),
+  out:        document.getElementById('out'),
+  testsList:  document.getElementById('testsList'),
+  btnRunIT:   document.getElementById('btnRunIT'),
+  modeBadge:  document.getElementById('modeBadge'),
 };
+const themeBtn = document.getElementById('themeToggle');
 
-
-/***** 2️⃣ Konfigurace *****/
-const API_KEY = "AIzaSyDBT4rqwNESvf2NVvvserDvUTQac2g6lGs";
-const CX = "b6e841a9585054492";
-const PROXY = "/api/search"; // pokud běží přes Docker proxy
+/* Config */
+//******************************************************//******************************************************
+const API_KEY    = "AIzaSyDBT4rqwNESvf2NVvvserDvUTQac2g6lGs";
+const CX         = "b6e841a9585054492";
 const GOOGLE_URL = "https://www.googleapis.com/customsearch/v1";
+//******************************************************//******************************************************
 
+let lastResults = [];
 
-/***** 3️⃣ MOCK výsledky (pro offline režim) *****/
+/* MOCK data */
 const MOCK_RESULTS = [
-  { title: "Example — Domain", link: "https://example.com/", snippet: "This domain is for use in illustrative examples in documents." },
-  { title: "MDN Web Docs", link: "https://developer.mozilla.org/", snippet: "Resources for developers, by developers." },
-  { title: "W3C", link: "https://www.w3.org/", snippet: "The World Wide Web Consortium (W3C) develops standards." },
+  { title:"Example — Domain", link:"https://example.com/",             snippet:"This domain is for use in illustrative examples in documents." },
+  { title:"MDN Web Docs",    link:"https://developer.mozilla.org/",    snippet:"Resources for developers, by developers." },
+  { title:"W3C",             link:"https://www.w3.org/",               snippet:"The World Wide Web Consortium (W3C) develops standards." },
 ];
 
-
-/***** 4️⃣ Pomocné funkce *****/
-
-// Vyrenderuje výsledky do stránky
-function renderResults(rows) {
-  els.out.innerHTML = "";
-  if (!rows || !rows.length) {
-    els.out.innerHTML = `<em>Žádné výsledky</em>`;
-    return;
-  }
+/* Helpers */
+function updateModeBadge(){
+  els.modeBadge.textContent = els.mode.value === 'mock' ? 'MOCK (bez API)' : 'Google CSE API';
+}
+function renderResults(rows){
+  lastResults = rows || [];
+  els.out.innerHTML = '';
+  if (!rows?.length){ els.out.innerHTML = '<em>Žádné výsledky</em>'; return; }
   rows.forEach(r => {
-    const div = document.createElement("div");
-    div.className = "result";
-    div.innerHTML = `<a href="${r.link}" target="_blank">${r.title}</a><br><small>${r.link}</small><p>${r.snippet}</p>`;
+    const div = document.createElement('div');
+    div.className = 'result';
+    div.innerHTML = `<a href="${r.link}" target="_blank">${r.title}</a><br/>
+                     <small>${r.link}</small><p>${r.snippet}</p>`;
     els.out.appendChild(div);
   });
 }
-
-// Zobrazí chybu
-function showError(err) {
-  els.out.innerHTML = `<pre style="color:#ef4444">API error — ${err}</pre>`;
+function showError(err){
+  els.out.innerHTML = `<pre class="fail">API error — ${err}</pre>`;
 }
-
-// Stáhne data jako soubor (JSON/CSV/PDF)
-function download(name, text) {
-  const blob = new Blob([text], { type: "application/octet-stream" });
+function toCSV(rows){
+  const esc = s => `${String(s??'').replace(/"/g,'""')}`;
+  const head = ['title','link','snippet'];
+  const lines = [head.join(',')];
+  (rows||[]).forEach(r=>lines.push([esc(r.title),esc(r.link),esc(r.snippet)].join(',')));
+  return lines.join('\n');
+}
+function download(name, text){
+  const blob = new Blob([text], {type:'application/octet-stream'});
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = name;
-  a.click();
+  const a = document.createElement('a'); a.href = url; a.download = name; a.click();
   URL.revokeObjectURL(url);
 }
 
-
-/***** 5️⃣ MOCK režim *****/
-async function searchMock(q) {
-  // Vrátí tři "falešné" výsledky se změněným názvem podle dotazu
-  return MOCK_RESULTS.map((r, i) =>
-    i === 0 ? { ...r, title: `${r.title} — ${q}` } : r
-  );
+/* Search */
+async function searchMock(q){
+  return MOCK_RESULTS.map((r,i)=> i===0 ? {...r, title:`${r.title} — ${q}`} : r);
 }
-
-
-/***** 6️⃣ Google CSE API (skutečné vyhledávání) *****/
-async function searchGoogle(q) {
+async function searchGoogle(q){
   const url = new URL(GOOGLE_URL);
-  url.searchParams.set("key", API_KEY);
-  url.searchParams.set("cx", CX);
-  url.searchParams.set("q", q);
-
+  url.searchParams.set('key', API_KEY);
+  url.searchParams.set('cx',  CX);
+  url.searchParams.set('q',   q);
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  if(!res.ok) throw new Error(`HTTP ${res.status}`);
   const data = await res.json();
-
-  if (!data.items) throw new Error("Žádné výsledky od Google");
-  return data.items.map(it => ({
-    title: it.title,
-    link: it.link,
-    snippet: it.snippet
-  }));
+  if(!data.items) return [];
+  return data.items.map(it => ({ title:it.title, link:it.link, snippet:it.snippet }));
 }
-
-
-/***** 7️⃣ Hlavní funkce hledání *****/
-async function runSearch() {
-  const q = els.q.value.trim();
-  if (!q) return;
-
-  els.out.innerHTML = `<em>Hledám...</em>`;
-  const mode = els.mode.value;
-  let rows;
-
-  try {
-    if (mode === "mock") rows = await searchMock(q);
-    else rows = await searchGoogle(q);
+async function runSearch(){
+  const q = els.q.value.trim(); if(!q) return;
+  document.body.classList.add('compact');
+  els.out.innerHTML = '<em>Hledám…</em>';
+  try{
+    const rows = (els.mode.value==='mock') ? await searchMock(q) : await searchGoogle(q);
     renderResults(rows);
-  } catch (err) {
-    showError(err);
-  }
+  }catch(e){ showError(e.message||e); }
 }
 
-
-/***** 8️⃣ Jednoduché unit testy *****/
-function runUnitTests() {
+/* Unit tests (запускаются по кнопке, а не сразу) */
+function runUnitTests(){
   const tests = [];
 
-  // test 1 – MOCK vrací přesně 3 prvky
-  tests.push({
-    name: "searchMock vrací pole s 3 prvky",
-    ok: Array.isArray(MOCK_RESULTS) && MOCK_RESULTS.length === 3
-  });
+  tests.push({ name:'searchMock vrací pole s 3 prvky',
+               ok:Array.isArray(MOCK_RESULTS) && MOCK_RESULTS.length===3 });
 
-  // test 2 – Výsledek má správnou strukturu
-  const sample = MOCK_RESULTS[0];
-  tests.push({
-    name: "výsledek má tvar {title, link, snippet}",
-    ok: sample && "title" in sample && "link" in sample && "snippet" in sample
-  });
+  const s = MOCK_RESULTS[0]||{};
+  tests.push({ name:'výsledek má tvar {title, link, snippet}',
+               ok:'title' in s && 'link' in s && 'snippet' in s });
 
-  // test 3 – API_KEY a CX jsou vyplněny
-  tests.push({
-    name: "Google API_KEY a CX nejsou prázdné",
-    ok: !!API_KEY && !!CX
-  });
+  tests.push({ name:'Google API_KEY a CX nejsou prázdné', ok:!!API_KEY && !!CX });
 
-  // test 4 – renderResults vytváří HTML
-  const tmpDiv = document.createElement("div");
+  // renderResults не портим: проверим, что оно что-то выводит, и откатим
+  const before = els.out.innerHTML;
   renderResults(MOCK_RESULTS);
-  tests.push({
-    name: "renderResults vytváří HTML s výsledky",
-    ok: els.out.innerHTML.includes("Example")
-  });
+  const changed = els.out.innerHTML.includes('Example');
+  els.out.innerHTML = before;
+  tests.push({ name:'renderResults vytváří HTML s výsledky', ok:changed });
 
-  // Výpis výsledků
-  els.testsList.innerHTML = "";
-  tests.forEach(t => {
-    const li = document.createElement("div");
-    li.innerHTML = `${t.ok ? "✅" : "❌"} ${t.name}`;
-    li.className = t.ok ? "ok" : "fail";
+  // Вывод
+  els.testsList.innerHTML = '';
+  for(const t of tests){
+    const li = document.createElement('div');
+    li.className = t.ok ? 'ok' : 'fail';
+    li.textContent = `${t.ok ? '✅' : '❌'} ${t.name}`;
     els.testsList.appendChild(li);
-  });
-  const okCount = tests.filter(t => t.ok).length;
-  els.testsList.innerHTML += `<br><strong>${okCount}/${tests.length}</strong> testů prošlo.`;
+  }
+  const okCount = tests.filter(t=>t.ok).length;
+  els.testsList.insertAdjacentHTML('beforeend', `<br><strong>${okCount}/${tests.length}</strong> testů prošlo.`);
 }
 
-
-/***** 9️⃣ Event listenery *****/
-document.getElementById("searchBtn").addEventListener("click", runSearch);
-els.btnRunIT?.addEventListener("click", runUnitTests);
-
-// automaticky spustí testy po načtení stránky
-window.addEventListener("load", runUnitTests);
-
-/***** 🌙 Přepínání tématu (dark / light) *****/
-const themeBtn = document.getElementById('themeToggle');
-
-// při načtení zkusíme načíst poslední téma z localStorage
-const savedTheme = localStorage.getItem('theme');
-if (savedTheme) document.documentElement.dataset.theme = savedTheme;
-updateThemeButton();
-
-// kliknutím přepínáme
-themeBtn?.addEventListener('click', () => {
-  const current = document.documentElement.dataset.theme;
-  const next = current === 'dark' ? 'light' : 'dark';
-  document.documentElement.dataset.theme = next;
-  localStorage.setItem('theme', next);
+/* Theme switch */
+(function initTheme(){
+  const saved = localStorage.getItem('theme');
+  if(saved) document.documentElement.dataset.theme = saved;
   updateThemeButton();
+  themeBtn?.addEventListener('click', () => {
+    const cur = document.documentElement.dataset.theme || 'light';
+    const next = (cur==='dark') ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    localStorage.setItem('theme', next);
+    updateThemeButton();
+  });
+})();
+function updateThemeButton(){
+  const t = document.documentElement.dataset.theme || 'light';
+  themeBtn.textContent = t==='dark' ? '☀️' : '🌙';
+  themeBtn.title      = t==='dark' ? 'Světlé téma' : 'Tmavé téma';
+}
+
+/* Downloads */
+document.getElementById('dlJson')?.addEventListener('click', ()=>download('results.json', JSON.stringify(lastResults, null, 2)));
+document.getElementById('dlCsv') ?.addEventListener('click', ()=>download('results.csv',  toCSV(lastResults)));
+document.getElementById('dlPdf') ?.addEventListener('click', async ()=>{
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  let y = 10;
+  lastResults.forEach((r,i)=>{
+    doc.text(`${i+1}. ${r.title}`, 10, y); y+=6;
+    doc.text(`${r.link}`, 10, y); y+=6;
+    doc.text(`${(r.snippet||'').slice(0,120)}`, 10, y); y+=10;
+  });
+  doc.save('results.pdf');
 });
 
-// funkce mění ikonu na tlačítku
-function updateThemeButton(){
-  const theme = document.documentElement.dataset.theme || 'light';
-  themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
-  themeBtn.title = theme === 'dark' ? 'Světlé téma' : 'Tmavé téma';
-}
+/* Hooks */
+document.getElementById('searchBtn')?.addEventListener('click', runSearch);
+els.mode?.addEventListener('change', updateModeBadge);
+els.btnRunIT?.addEventListener('click', runUnitTests);
 
+// при загрузке — год в футере и бейдж режима
+document.getElementById('year').textContent = new Date().getFullYear();
+updateModeBadge();
