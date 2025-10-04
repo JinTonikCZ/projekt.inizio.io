@@ -19,7 +19,7 @@ document.getElementById("themeToggle").addEventListener("click", () => {
 });
 
 /* ---------- 1) Konst / utils ---------- */
-const API_KEY = "VLOŽ_SVŮJ_API_KEY";     // ← vlož svůj klíč
+const API_KEY = "AIzaSyDBT4rqwNESvf2NVvvserDvUTQac2g6lGs";     // ← vlož svůj klíč
 const CX      = "b6e841a9585054492";     // ← tvé CSE ID (CX)
 
 const $ = (s) => document.querySelector(s);
@@ -195,4 +195,5 @@ test("výsledek má tvar {title, link, snippet}", async () => {
   sum.innerHTML = `<strong>${ok}/${tests.length}</strong> testů prošlo.`;
   box.appendChild(sum);
 })();
+
 
