@@ -1,11 +1,3 @@
-/* ===========================================================
-   Search Extractor – čistý app.js
-   - light/dark téma (localStorage)
-   - MOCK a Google CSE API
-   - export JSON/CSV/PDF
-   - unit testy (úzký blok)
-   =========================================================== */
-
 /* ---------- 0) Téma ---------- */
 const THEME_KEY = "se-theme";
 
@@ -203,3 +195,4 @@ test("výsledek má tvar {title, link, snippet}", async () => {
   sum.innerHTML = `<strong>${ok}/${tests.length}</strong> testů prošlo.`;
   box.appendChild(sum);
 })();
+
