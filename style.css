@@ -1,151 +1,266 @@
-/* ============ ТЕМЫ (CSS-переменные) ============ */
-:root{
-  /* LIGHT */
-  --bg:#f6f7fb; --card:#fff; --border:#e3e6ef; --text:#0e1320; --muted:#5b6478;
-  --link:#0d6efd; --chip:#eef1f7; --shadow:0 8px 24px rgba(16,24,40,.08);
-}
-:root[data-theme="dark"]{
-  /* DARK */
-  --bg:#0b1020; --card:#12193a; --border:#1e2a5a; --text:#f1f5ff; --muted:#a5b4fc;
-  --link:#8dd0ff; --chip:#0c1433; --shadow:0 8px 24px rgba(0,0,0,.25);
+/* =========================================================
+   🌙 Search Extractor – StyleSheet
+   ========================================================= */
+
+/* ---------- Темы (CSS переменные) ---------- */
+:root {
+  /* Светлая тема */
+  --bg: #f6f7fb;
+  --card: #ffffff;
+  --border: #e3e6ef;
+  --text: #0e1320;
+  --muted: #5b6478;
+  --link: #0d6efd;
+  --chip: #eef1f7;
+  --shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
 }
 
-/* ---------- Globální styl ---------- */
-*{ box-sizing:border-box }
-html,body{ height:100% }
-body{
-  margin:24px;
-  font-family:system-ui,-apple-system,Segoe UI,Inter,Roboto,sans-serif;
-  line-height:1.45;
-  background:var(--bg);
-  color:var(--text);
-}
-a{ color:var(--link); text-decoration:none }
-a:hover{ text-decoration:underline }
-.muted{ color:var(--muted) }
-
-.container{ width:min(1100px,92vw); margin-inline:auto }
-.container--narrow{ width:min(720px,92vw) }
-
-.card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:16px;
-  box-shadow:var(--shadow);
+:root[data-theme="dark"] {
+  /* Тёмная тема */
+  --bg: #0b1020;
+  --card: #12193a;
+  --border: #1e2a5a;
+  --text: #f1f5ff;
+  --muted: #a5b4fc;
+  --link: #8dd0ff;
+  --chip: #0c1433;
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
-.h2{ margin:0 0 8px }
-
-/* кнопки и поля */
-input,select,button{
-  border:1px solid var(--border);
-  background:var(--chip);
-  color:var(--text);
-  border-radius:10px;
-  padding:10px 12px;
-}
-input{ min-width:260px; flex:1 }
-button{ cursor:pointer }
-.btn{ background:var(--chip) }
-.btn--ghost{ background:var(--card) }
-
-/* бейджи */
-.pills .pill{
-  display:inline-block;
-  border:1px solid var(--border);
-  background:var(--chip);
-  padding:4px 8px;
-  border-radius:999px;
-  font-size:12px;
-  margin-right:6px;
+/* ---------- Базовые элементы ---------- */
+* {
+  box-sizing: border-box;
 }
 
-/* ============ HERO (поиск по центру) ============ */
-.hero{
-  min-height:60vh;
-  display:grid;
-  place-items:center;
-  padding:24px 0;
+html,
+body {
+  height: 100%;
 }
-.brand{
-  margin:0 0 18px;
-  text-align:center;
-  font-size:clamp(22px,2.6vw,32px);
-  opacity:.95;
+
+body {
+  margin: 24px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, Segoe UI, Inter, Roboto, sans-serif;
+  line-height: 1.45;
+  transition: background 0.3s, color 0.3s;
 }
-.searchbar{
-  display:grid;
-  grid-template-columns:1fr auto auto; /* input + hledat + select */
-  gap:8px;
-  align-items:center;
-  padding:10px;
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:999px;
-  box-shadow:var(--shadow);
+
+a {
+  color: var(--link);
+  text-decoration: none;
 }
-.searchbar input{
-  border:none;
-  background:transparent;
-  padding:12px 14px;
-  font-size:16px;
+
+a:hover {
+  text-decoration: underline;
 }
+
+.muted {
+  color: var(--muted);
+}
+
+/* ---------- Контейнеры ---------- */
+.container {
+  width: min(1100px, 92vw);
+  margin-inline: auto;
+}
+
+.container--narrow {
+  width: min(720px, 92vw);
+}
+
+/* ---------- Карточки ---------- */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+
+.h2 {
+  margin: 0 0 8px;
+}
+
+/* ---------- Поля и кнопки ---------- */
+input,
+select,
+button {
+  border: 1px solid var(--border);
+  background: var(--chip);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 15px;
+}
+
+input {
+  min-width: 260px;
+  flex: 1;
+}
+
+button {
+  cursor: pointer;
+}
+
+.btn {
+  background: var(--chip);
+}
+
+.btn--ghost {
+  background: var(--card);
+}
+
+/* ---------- Плашка (pill) ---------- */
+.pill {
+  display: inline-block;
+  border: 1px solid var(--border);
+  background: var(--chip);
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+/* ---------- HERO (главный блок поиска) ---------- */
+.hero {
+  min-height: 60vh;
+  display: grid;
+  place-items: center;
+  padding: 24px 0;
+}
+
+.brand {
+  margin: 0 0 18px;
+  text-align: center;
+  font-size: clamp(22px, 2.6vw, 32px);
+  opacity: 0.95;
+}
+
+.searchbar {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 8px;
+  align-items: center;
+  padding: 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+}
+
+.searchbar input {
+  border: none;
+  background: transparent;
+  padding: 12px 14px;
+  font-size: 16px;
+}
+
 .searchbar .btn,
-.searchbar select{
-  border-radius:999px;
-  padding:10px 14px;
+.searchbar select {
+  border-radius: 999px;
+  padding: 10px 14px;
 }
 
-/* компактный режим после поиска */
-body.compact .hero{ min-height:0; padding:8px 0 0 }
-body.compact .brand{ display:none }
-
-/* ============ РЕЗУЛЬТАТЫ ============ */
-.result{ padding:10px; border-bottom:1px dashed var(--border) }
-.result:last-child{ border-bottom:none }
-.ok{ color:#12b76a } .fail{ color:#ef4444 }
-
-/* ============ UNIT TESTY (узкая, слева) ============ */
-.section{ margin-block:16px }
-.section--tests .card{ padding:0 }           /* чистый список без лишних полей */
-#tests{ text-align:left }                    /* явное выравнивание текста */
-
-/* ============ ФУТЕР ============ */
-.site-footer{
-  margin-top:24px;
-  padding:16px 0;
-  background:var(--card);
-  border-top:1px solid var(--border);
-  box-shadow:var(--shadow);
-}
-.footer-grid{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:16px;
-}
-.footer-brand{ display:flex; align-items:center; gap:10px }
-.footer-logo{ height:28px; width:auto; display:block }
-.footer-actions{ display:flex; flex-direction:column; align-items:flex-end; gap:8px }
-.download-buttons{ display:flex; gap:8px }
-.download-buttons .btn{ border-radius:8px; padding:6px 12px }
-
-@media (max-width:640px){
-  .footer-grid{ flex-direction:column; align-items:flex-start }
-  .footer-actions{ align-items:flex-start }
+body.compact .hero {
+  min-height: 0;
+  padding: 8px 0 0;
 }
 
-/* ---------- Tlačítko přepínače ---------- */
-.btn-ghost{
-  border:1px solid var(--border);
-  background:var(--chip);
-  color:var(--text);
-  padding:6px 10px;
-  border-radius:10px;
-  cursor:pointer;
-}
-.btn-ghost:hover{
-  opacity:.85;
+body.compact .brand {
+  display: none;
 }
 
+/* ---------- Результаты поиска ---------- */
+.result {
+  padding: 10px;
+  border-bottom: 1px dashed var(--border);
+}
+
+.result:last-child {
+  border-bottom: none;
+}
+
+.ok {
+  color: #12b76a;
+}
+
+.fail {
+  color: #ef4444;
+}
+
+/* ---------- Разделы ---------- */
+.section {
+  margin-block: 16px;
+}
+
+.section--tests .card {
+  padding: 0;
+}
+
+#testsList {
+  text-align: left;
+}
+
+/* ---------- Футер ---------- */
+.site-footer {
+  margin-top: 24px;
+  padding: 16px 0;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.footer-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.footer-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.download-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.download-buttons .btn {
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+
+@media (max-width: 640px) {
+  .footer-grid {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .footer-actions {
+    align-items: flex-start;
+  }
+}
+
+/* ---------- Кнопка темы ---------- */
+.topbar-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.btn-ghost {
+  border: 1px solid var(--border);
+  background: var(--chip);
+  color: var(--text);
+  padding: 6px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-ghost:hover {
+  opacity: 0.85;
+}
