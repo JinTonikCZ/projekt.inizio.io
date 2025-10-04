@@ -2,67 +2,75 @@
 <html lang="cs" data-theme="dark">
 <head>
   <meta charset="utf-8" />
-  <title>Search Extractor – Praktický test “mozna.inizio.cz”</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Search Extractor</title>
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
-  <header class="topbar">
-    <h1>Search Extractor – Praktický test “mozna.inizio.cz”</h1>
- 
-    <div class="topbar-actions">
-      <button id="themeToggle" class="btn-ghost" aria-label="Přepnout téma">🌙</button>
+  <!-- Переключатель темы (закреплён в углу) -->
+  <button id="themeToggle" class="theme-toggle" aria-label="Přepnout téma">🌙</button>
+
+  <!-- HERO: поиск по центру экрана -->
+  <section class="hero" id="hero">
+    <div class="container">
+      <h1 class="brand">Search Extractor</h1>
+
+      <div class="searchbar">
+        <input id="q" type="text" placeholder="Zadejte klíčové slovo…" />
+        <button id="run" class="btn">Hledat</button>
+        <select id="mode" title="Režim">
+          <option value="google">Google CSE API</option>
+          <option value="mock">MOCK (bez API)</option>
+        </select>
+      </div>
+
+      <p class="muted pills">
+        <span class="pill">Strukturovaný výstup: <code>{ title, link, snippet }</code></span>
+        <span class="pill">Unit testy níže</span>
+      </p>
     </div>
-  </header>
+  </section>
 
-     <!-- HERO: центрируем поиск как у Google -->
-<section class="hero" id="hero">
-  <div class="hero-inner">
-    <!-- можно скрыть h1, если не нужен -->
-    <h1 class="brand">Search Extractor</h1>
-
-    <div class="searchbar">
-      <input id="q" type="text" placeholder="Zadejte klíčové slovo…" />
-      <button id="run">Hledat</button>
-      <select id="mode" title="Režim">
-        <option value="google">Google CSE API</option>
-        <option value="mock">MOCK (bez API)</option>
-      </select>
+  <!-- Результаты -->
+  <section class="section">
+    <div class="container">
+      <div id="out" class="card"><em>Zde se zobrazí výsledky…</em></div>
     </div>
-  </div>
-</section>
+  </section>
+
+  <!-- Unit testy (узкая колонка, слева) -->
+  <section class="section section--tests">
+    <div class="container container--narrow">
+      <h2 class="h2">Unit testy</h2>
+      <div id="tests" class="card"></div>
     </div>
-  </div>
+  </section>
 
-  <div class="card" id="out"><em>Zde se zobrazí výsledky…</em></div>
-
-  <div class="card">
-    <h2 class="h2">Unit testy</h2>
-    <div id="tests"></div>
-  </div>
+  <!-- Футер (кнопки скачивания справа) -->
   <footer class="site-footer">
-  <div class="footer-inner">
-    <div class="footer-left">
-      <img src="img/programatorr-logo.svg" alt="ProgramatoRR" class="footer-logo" />
-      <div class="footer-brand">ProgramatoRR</div>
-    </div>
-    <div class="footer-right">
-      <div class="download-buttons">
-        <button id="dlJson" title="Uložit JSON">⬇ JSON</button>
-        <button id="dlCsv"  title="Uložit CSV">⬇ CSV</button>
-        <button id="dlPdf"  title="Uložit PDF">⬇ PDF</button>
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <img src="img/programatorr-logo.svg" alt="ProgramatoRR" class="footer-logo" />
+        <span>ProgramatoRR</span>
       </div>
-      <div class="footer-copy">
-        © <span id="year"></span> • Praktický test „mozna.inizio.cz“
+
+      <div class="footer-actions">
+        <div class="download-buttons">
+          <button id="dlJson" class="btn btn--ghost" title="Uložit JSON">⬇ JSON</button>
+          <button id="dlCsv"  class="btn btn--ghost" title="Uložit CSV">⬇ CSV</button>
+          <button id="dlPdf"  class="btn btn--ghost" title="Uložit PDF">⬇ PDF</button>
+        </div>
+        <div class="footer-copy">
+          © <span id="year"></span> • Praktický test „mozna.inizio.cz“
+        </div>
       </div>
     </div>
-  </div>
-</footer>
+  </footer>
 
-
+  <!-- jsPDF для экспорта PDF -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <!-- Приложение -->
   <script src="app.js"></script>
 </body>
 </html>
-
-
-
