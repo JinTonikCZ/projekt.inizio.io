@@ -18,9 +18,13 @@ document.getElementById("themeToggle").addEventListener("click", () => {
   localStorage.setItem(THEME_KEY, next);
 });
 
-/* ---------- 1) Konst / utils ---------- */
+/* ---------- 1) Konst / utils ----------=======================================================
+ */
 const API_KEY = "AIzaSyDBT4rqwNESvf2NVvvserDvUTQac2g6lGs";    
 const CX      = "b6e841a9585054492";     
+/* =======================================================
+ */
+
 
 const $ = (s) => document.querySelector(s);
 
@@ -195,6 +199,7 @@ test("výsledek má tvar {title, link, snippet}", async () => {
   sum.innerHTML = `<strong>${ok}/${tests.length}</strong> testů prošlo.`;
   box.appendChild(sum);
 })();
+
 
 
 
