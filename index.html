@@ -2,80 +2,61 @@
 <html lang="cs" data-theme="dark">
 <head>
   <meta charset="utf-8" />
-  <title>Search Extractor – Praktický test “mozna.inizio.cz”</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Search</title>
+  <title>Search Extractor – praktický test</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-  <!-- Přepnout téma -->
-<div class="topbar-actions">
-  <button id="themeToggle" class="btn-ghost" title="Přepnout téma">🌙</button>
-</div>
+  <!-- Переключатель темы -->
+  <div class="topbar-actions">
+    <button id="themeToggle" class="btn-ghost" title="Přepnout téma">🌙</button>
+  </div>
 
-  <!-- HLEDANI -->
-  <section class="hero" id="hero">
+  <!-- HERO (поиск по центру) -->
+  <section class="hero">
     <div class="container">
       <h1 class="brand">Search Extractor</h1>
 
       <div class="searchbar">
         <input id="q" type="text" placeholder="Zadejte klíčové slovo…" />
-        <button id="run" class="btn">Hledat</button>
+        <button id="searchBtn" class="btn">Hledat</button>
         <select id="mode" title="Režim">
           <option value="google">Google CSE API</option>
           <option value="mock">MOCK (bez API)</option>
         </select>
-         <!-- бейдж режима -->
-        <span id="modeBadge" class="badge badge-google">Google CSE API</span>
+        <span id="modeBadge" class="pill">Google CSE API</span>
       </div>
     </div>
   </section>
 
-  <!-- RESULT tlačítka -->
+  <!-- Результаты -->
   <section class="section">
     <div class="container">
-      <div id="out" class="card"><em>Zde se zobrazí výsledky…</em></div>
+      <div id="outCard" class="card">
+        <div id="out" class="muted">Zde se zobrazí výsledky…</div>
+      </div>
     </div>
   </section>
 
-  <!-- Unit testy  -->
-  <section class="section section--tests">
+  <!-- Тесты -->
+  <section id="testsCard" class="section">
     <div class="container container--narrow">
-      <h2 class="h2">Unit testy</h2>
-      <div id="tests" class="card"></div>
+      <h2 class="h2">Unit/Integration testy <span id="testsScope" class="muted">— připraveno</span></h2>
+      <div id="testsList" class="card"></div>
+      <div class="tests-actions">
+        <button id="btnRunIT" class="btn-ghost">Spustit unit testy</button>
+      </div>
     </div>
   </section>
-  
-<!-- ===== VÝSLEDKY ===== -->
-  <section class="card" id="outCard">
-    <div id="out" class="muted">Zde se zobrazí výsledky…</div>
-  </section>
 
-  <!-- ===== TESTY (skryté do prvního kliknutí) ===== -->
-  <section class="card narrow hidden" id="testsCard">
-    <h2 class="h2">
-      Unit/Integration testy
-      <span id="testsScope" class="tag">—</span>
-    </h2>
-    <ul id="tests" class="tests"></ul>
-
-    <div class="tests-actions">
-      <button class="btn-ghost hidden" id="btnRunIT">Run integration test (Google)</button>
-    </div>
-  </section>
-  
-  <!-- FUTER -->
+  <!-- Футер -->
   <footer class="site-footer">
     <div class="container footer-grid">
       <div class="footer-brand">
-       
         <span>ProgramatoRR</span>
       </div>
-
       <div class="footer-actions">
         <div class="download-buttons">
-            <!-- RESULT tlačítka -->
           <button id="dlJson" class="btn btn--ghost" title="Uložit JSON">⬇ JSON</button>
           <button id="dlCsv"  class="btn btn--ghost" title="Uložit CSV">⬇ CSV</button>
           <button id="dlPdf"  class="btn btn--ghost" title="Uložit PDF">⬇ PDF</button>
@@ -87,23 +68,9 @@
     </div>
   </footer>
 
-  <!-- jsPDF EXPORT PDF -->
+  <!-- jsPDF для PDF -->
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <!-- Приложение -->
   <script src="app.js"></script>
-  <script>
-   <!-- навесим обработчики после загрузки app.js -->
-    document.getElementById('btnSearch')?.addEventListener('click', runSearch);
-    document.getElementById('mode')?.addEventListener('change', updateModeUI);
-    document.getElementById('btnRunIT')?.addEventListener('click', runIntegrationTestGoogle);
-
- <!--   // при открытии просто отрисуем бейдж режима -->
 </body>
 </html>
-
-
-
-
-
-
-
