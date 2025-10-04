@@ -18,10 +18,30 @@
   <div class="card">
     <div class="row">
       <input id="q" type="text" placeholder="Zadejte klíčové slovo…" />
+     <!-- HERO: центрируем поиск как у Google -->
+<section class="hero" id="hero">
+  <div class="hero-inner">
+    <!-- можно скрыть h1, если не нужен -->
+    <h1 class="brand">Search Extractor</h1>
+
+    <div class="searchbar">
+      <input id="q" type="text" placeholder="Zadejte klíčové slovo…" />
       <select id="mode" title="Režim">
         <option value="mock">MOCK (bez API)</option>
         <option value="google">Google CSE API</option>
       </select>
+      <button id="run">Hledat</button>
+      <button id="dlJson" title="Uložit JSON">⬇ JSON</button>
+      <button id="dlCsv"  title="Uložit CSV">⬇ CSV</button>
+    </div>
+
+    <div class="muted pills">
+      <span class="pill">Strukturovaný výstup: <code>{ title, link, snippet }</code></span>
+      <span class="pill">Unit testy: níže</span>
+    </div>
+  </div>
+</section>
+
       <button id="run">Hledat</button>
       <button id="dlJson" title="Uložit JSON">⬇ JSON</button>
       <button id="dlCsv" title="Uložit CSV">⬇ CSV</button>
@@ -43,5 +63,6 @@
   <script src="app.js"></script>
 </body>
 </html>
+
 
 
