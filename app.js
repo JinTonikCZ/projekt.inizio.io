@@ -263,6 +263,12 @@ function updateThemeButtonUI() {
   // Hook up UI actions (each with null guard)
   $("themeToggle")?.addEventListener("click", toggleTheme);
   $("searchBtn")?.addEventListener("click", runSearch);
+  $("q")?.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault(); // prevent form submission (if any)
+    runSearch();
+  }
+});
   $("mode")?.addEventListener("change", updateModeBadge);
   $("btnRunIT")?.addEventListener("click", runUnitTests);
 
@@ -292,3 +298,4 @@ function updateThemeButtonUI() {
   // Initial badge
   updateModeBadge();
 });
+
