@@ -244,14 +244,23 @@ function runUnitTests() {
   });
 
   // 4) renderResults produces HTML output for non-empty input and restores empty
-  const before = $("out").innerHTML;
-  renderResults(MOCK_RESULTS);
-  const changed = $("out").innerHTML.includes("Example");
-  $("out").innerHTML = before;
-  tests.push({
-    name: "renderResults creates HTML in the output container",
-    ok: changed
-  });
+// 4) renderResults opravdu zapíše něco do #out (počtem .result)
+const out   = $("out");
+const backup = out.innerHTML;
+const prev  = out.querySelectorAll(".result").length;
+
+renderResults(MOCK_RESULTS);
+
+const now = out.querySelectorAll(".result").length;
+const ok  = now > prev;
+
+out.innerHTML = backup;
+
+tests.push({
+  name: "renderResults creates HTML in the output container",
+  ok
+});
+
 
   // ----- print results -----
   list.innerHTML = "";
@@ -345,6 +354,7 @@ function updateThemeButtonUI() {
   // Initial badge
   updateModeBadge();
 });
+
 
 
 
