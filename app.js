@@ -13,9 +13,9 @@ let lastResults = [];
 /*============================================================================== */
 const MOCK_RESULTS = [
   {
-    title: "Example — Domain",
-    link: "https://example.com/",
-    snippet: "This domain is for use in illustrative examples in documents."
+    title: "inizio",
+    link: "https://www.inizio.cz/",
+    snippet: "Inizio je webová laboratoř ."
   },
   {
     title: "MDN Web Docs",
@@ -33,32 +33,51 @@ const MOCK_RESULTS = [
 const $ = (id) => document.getElementById(id);
 
 /* =================================================
- * Search functions
+ * Funkce vyhledávání
  * ================================================= */
 
-/** Return mock data, with the first title annotated by the query (for visual feedback). */
+/**
+ * searchMock(q)
+ * - Vrací statické výsledky z pole MOCK_RESULTS.
+ * - Používá se, když je vybrán režim MOCK (bez API).
+ * - Do prvního výsledku doplní hledaný dotaz pro vizuální efekt.
+ */
 async function searchMock(q) {
   return MOCK_RESULTS.map((r, i) =>
     i === 0 ? { ...r, title: `${r.title} — ${q}` } : r
   );
 }
 
-/** Call Google Custom Search JSON API */
+/**
+ * searchGoogle(q)
+ * - Provádí reálné vyhledávání přes Google Custom Search API.
+ * - Sestaví URL s parametry klíče, ID a dotazu.
+ * - Vrátí pole výsledků (title, link, snippet).
+ */
+
 async function searchGoogle(q) {
+    // 1️ Vytvoření URL s parametry
+
   const url = new URL(GOOGLE_URL);
   url.searchParams.set("key", API_KEY);
   url.searchParams.set("cx", CX);
   url.searchParams.set("q", q);
-
+  
+  // 2️  Odeslání HTTP požadavku
   const res = await fetch(url);
+  
+  // 3️ Ošetření chyb – pokud API nevrátí 200 OK
   if (!res.ok) {
     // make the HTTP error readable
     const txt = await res.text().catch(() => String(res.status));
     throw new Error(`HTTP ${res.status} — ${txt}`);
   }
+  
+    // 4️ Zpracování odpovědi JSON
   const data = await res.json();
   if (!data.items) return [];
 
+    // 5️ Zjednodušení výsledků pro renderování
   return data.items.map((it) => ({
     title: it.title,
     link: it.link,
@@ -66,22 +85,31 @@ async function searchGoogle(q) {
   }));
 }
 
-/** Choose the source (mock vs Google) and render the results. */
-async function runSearch() {
-  const qEl = $("q");
-  const modeEl = $("mode");
-  const outEl = $("out");
-  const q = (qEl?.value || "").trim();
+/** ===============================================================
+ *  Hlavní funkce runSearch()
+ * ===============================================================
+ * - Spouští vyhledávání podle zadaného dotazu.
+ * - Rozhoduje, zda použít mockovaná data nebo Google API.
+ * - Zobrazí text "Hledám..." a následně výsledky nebo chybu.
+ */async function runSearch() {
+  const qEl = $("q");     // vstupní pole
+  const modeEl = $("mode");   // výběr režimu
+  const outEl = $("out");     // výstupní kontejner
+  const q = (qEl?.value || "").trim();    // získání dotazu
 
-  if (!q) return;
-  document.body.classList.add("compact");
-  outEl.innerHTML = "<em>Hledám…</em>";
+  if (!q) return;        // pokud je pole prázdné → konec
+  document.body.classList.add("compact");    // zmenší "hero" oblast
+  outEl.innerHTML = "<em>Hledám…</em>";   // zobrazení textu během načítání
 
   try {
+    // kontrola režimu (mock nebo reálné API)
     const useMock = modeEl?.value === "mock";
+        // vyhledávání podle zvoleného režimu
     const rows = useMock ? await searchMock(q) : await searchGoogle(q);
+        // zobrazení výsledků
     renderResults(rows);
   } catch (e) {
+        // v případě chyby (např. API key nefunguje)
     showError(e.message);
   }
 }
@@ -90,17 +118,20 @@ async function runSearch() {
  * Rendering & helpers
  * ================================================= */
 
-/** Render result cards to the page and keep a copy in `lastResults`. */
+/**  Vykreslení výsledků na stránku
+ *    - uložíme kopii do lastResults pro exporty. */
 function renderResults(rows) {
   lastResults = rows || [];
   const out = $("out");
   out.innerHTML = "";
-
+  
+  // Pokud nic nepřišlo, zobraz krátkou zprávu a skonči
   if (!rows || rows.length === 0) {
     out.innerHTML = "<em>Zde se zobrazí výsledky…</em>";
     return;
   }
-
+  
+  // Každý výsledek vykreslíme jako „kartu“
   rows.forEach((r) => {
     const li = document.createElement("div");
     li.className = "result";
@@ -179,6 +210,12 @@ function updateModeBadge() {
  */
 // * ================================================= */
 
+/**
+ * runUnitTests()
+ * - Testuje základ: strukturu MOCK_RESULTS, přítomnost polí,
+ *   že render přidá do DOMu obsah atd.
+ * - Nezávislé na Google API (běží čistě na mocku).
+ */
 function runUnitTests() {
   const list = $("testsList");
   const scope = $("testsScope");
@@ -307,6 +344,7 @@ function updateThemeButtonUI() {
   // Initial badge
   updateModeBadge();
 });
+
 
 
 
