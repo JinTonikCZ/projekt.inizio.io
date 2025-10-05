@@ -148,7 +148,7 @@ function renderResults(rows) {
   URL.revokeObjectURL(url);
 }
 
-/** Convert array of rows to CSV string. */
+/** Převod pole objektů (title/link/snippet) do CSV řetězce. */
 function toCSV(rows) {
   const esc = (s = "") => `"${String(s).replace(/"/g, '""')}"`;
   const header = ["title", "link", "snippet"];
@@ -169,7 +169,15 @@ function updateModeBadge() {
 
 /* =================================================
  * Unit tests – run on button click (pure client-side)
- * ================================================= */
+
+ 
+/** Spustí jednoduché unit testy (zobrazí výsledky v seznamu).
+ *  – 1) MOCK pole má 3 prvky
+ *  – 2) řádek má klíče {title, link, snippet}
+ *  – 3) API_KEY a CX nejsou prázdné (sanita kontrola)
+ *  – 4) renderResults skutečně něco vloží do DOM
+ */
+// * ================================================= */
 
 function runUnitTests() {
   const list = $("testsList");
@@ -178,8 +186,8 @@ function runUnitTests() {
 
   const tests = [];
 
-  // 1) mock returns exactly three rows
-  tests.push({
+  // 1) MOCK vrací pole o délce 3  tests.push({
+  
     name: "searchMock returns an array of 3 items",
     ok: Array.isArray(MOCK_RESULTS) && MOCK_RESULTS.length === 3
   });
@@ -299,6 +307,7 @@ function updateThemeButtonUI() {
   // Initial badge
   updateModeBadge();
 });
+
 
 
 
