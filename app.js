@@ -223,7 +223,8 @@ function runUnitTests() {
 
   const tests = [];
 
-  // 1) MOCK vrací pole o délce 3  tests.push({
+  // 1) MOCK vrací pole o délce 3  
+  tests.push({
   
     name: "searchMock returns an array of 3 items",
     ok: Array.isArray(MOCK_RESULTS) && MOCK_RESULTS.length === 3
@@ -344,6 +345,7 @@ function updateThemeButtonUI() {
   // Initial badge
   updateModeBadge();
 });
+
 
 
 
