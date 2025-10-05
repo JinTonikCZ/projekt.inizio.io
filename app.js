@@ -115,16 +115,18 @@ function renderResults(rows) {
   });
 }
 
-/** Minimal HTML escaping for safe text output. */
-function escapeHtml(x) {
+/** Bezpečné vypsání textu do HTML (zabrání XSS)
+ *  Nahrazuje speciální znaky (&, <, >) HTML entitami.
+ */function escapeHtml(x) {
   return String(x)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
 }
 
-/** Show red error card in the results area. */
-function showError(msg) {
+/** Vykreslí chybovou kartu do sekce s výsledky.
+ *  Zároveň vynuluje lastResults (aby se nestahovaly staré údaje).
+ */function showError(msg) {
   lastResults = [];
   const out = $("out");
   out.innerHTML = `
@@ -134,9 +136,10 @@ function showError(msg) {
   `;
 }
 
-/** Download a string as a file. */
-function download(name, text) {
-  const blob = new Blob([text], { type: "application/octet-stream" });
+/**FUNKCE STAZENI -- Stáhne libovolný text jako soubor (např. JSON/CSV).
+ */function download(name, text) {
+  const blob = new Blob([text], { type: "application/octet-stream" }); //*  Vytvoří Blob → dočasnou URL → simulace kliknutí na <a download>.
+
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -296,5 +299,6 @@ function updateThemeButtonUI() {
   // Initial badge
   updateModeBadge();
 });
+
 
 
