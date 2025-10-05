@@ -243,7 +243,6 @@ function runUnitTests() {
     ok: !!API_KEY && !!CX
   });
 
-  // 4) renderResults produces HTML output for non-empty input and restores empty
 // 4) renderResults opravdu zapíše něco do #out (počtem .result)
 const out   = $("out");
 const backup = out.innerHTML;
@@ -354,6 +353,7 @@ function updateThemeButtonUI() {
   // Initial badge
   updateModeBadge();
 });
+
 
 
 
