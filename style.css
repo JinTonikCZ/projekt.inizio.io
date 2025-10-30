@@ -303,10 +303,10 @@ body.compact .brand {
 /* --- konkrétní barvy a pozice --- */
 .red {
   background: red;
-  top: 50px;
-  left: 50px;
-  width: 350px;
-  height: 200px;
+  top: 30px;
+  left: 60px;
+  width: 500px;
+  height: 150px;
 }
 
 .green {
@@ -324,6 +324,7 @@ body.compact .brand {
   width: 300px;
   height: 250px;
 }
+
 
 
 
