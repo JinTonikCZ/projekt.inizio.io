@@ -322,7 +322,11 @@ body.compact .brand {
   width: 300px;
   height: 300px;
 }
-
+.roman {
+  list-style-type: upper-roman;
+  margin-left: 20px;
+  color: white;
+}
 
 .blue {
   background: blue;
@@ -331,6 +335,7 @@ body.compact .brand {
   width: 300px;
   height: 350px;
 }
+
 
 
 
