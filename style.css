@@ -319,14 +319,15 @@ body.compact .brand {
   background: green;
   top: 50px;
   left: 370px;
-  width: 350px;
+  width: 300px;
   height: 300px;
 }
+
 
 .blue {
   background: blue;
   top: 280px;
-  left: 350px;
+  left: 300px;
   width: 300px;
   height: 350px;
 }
