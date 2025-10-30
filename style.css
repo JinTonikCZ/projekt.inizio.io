@@ -267,78 +267,62 @@ body.compact .brand {
 
 
 /* === Triptych (3 sekce) === */
-:root {
-  /* fallback переменные, если их нет в основном файле */
-  --bg: #0f1115;
-  --card: #171a21;
-  --muted: #9aa4b2;
-  --text: #e8eef9;
-  --accent: #6ea8fe;
-  --border: #2a2f3a;
+.projekce {
+  background-color: black;
+  color: white;
+  padding: 20px;
+  position: relative;
+  min-height: 700px;
 }
 
-[data-theme="dark"] body {
-  background: var(--bg);
-  color: var(--text);
+.projekce h1 {
+  font-size: 2em;
+  font-weight: bold;
+  margin-bottom: 20px;
 }
 
-.section.triptych {
-  padding: 2.5rem 0;
+.box {
+  position: absolute;
+  padding: 15px;
+  border: 2px dotted red;
+  color: yellow;
 }
 
-.triptych .container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 16px;
+.box h2 {
+  font-weight: bold;
+  color: yellow;
+  margin-bottom: 10px;
 }
 
-.triptych-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+.box p, .box ul, .box ol {
+  color: white;
+  font-size: 0.95em;
+  line-height: 1.4;
 }
 
-.triptych-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 18px;
-  box-shadow: 0 6px 20px rgba(0,0,0,.25);
-  transition: transform .15s ease, box-shadow .15s ease;
+/* --- konkrétní barvy a pozice --- */
+.red {
+  background: red;
+  top: 80px;
+  left: 50px;
+  width: 300px;
+  height: 250px;
 }
 
-.triptych-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 28px rgba(0,0,0,.32);
+.green {
+  background: green;
+  top: 50px;
+  left: 400px;
+  width: 300px;
+  height: 200px;
 }
 
-.triptych-title {
-  font-size: 1.1rem;
-  margin: 0 0 .5rem 0;
+.blue {
+  background: blue;
+  top: 300px;
+  left: 350px;
+  width: 300px;
+  height: 250px;
 }
 
-.triptych-text {
-  margin: 0 0 1rem 0;
-  color: var(--muted);
-  line-height: 1.5;
-}
-
-.triptych-link {
-  display: inline-block;
-  text-decoration: none;
-  color: var(--accent);
-  font-weight: 600;
-}
-
-.triptych-link:hover {
-  text-decoration: underline;
-}
-
-/* Адаптив: на планшетах две колонки, на телефонах одна */
-@media (max-width: 980px) {
-  .triptych-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 640px) {
-  .triptych-grid { grid-template-columns: 1fr; }
-}
 
