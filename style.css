@@ -305,8 +305,8 @@ body.compact .brand {
   background: red;
   top: 50px;
   left: 50px;
-  width: 300px;
-  height: 250px;
+  width: 350px;
+  height: 200px;
 }
 
 .green {
@@ -324,6 +324,7 @@ body.compact .brand {
   width: 300px;
   height: 250px;
 }
+
 
 
 
