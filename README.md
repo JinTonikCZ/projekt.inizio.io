@@ -1,7 +1,7 @@
 # test projekt pro inizio 
 ...
 Popíšu tento redmy, pokud nezapomenu xd )) 
-
+https://jintonikcz.github.io/projekt.inizio.io/
 
 1) vytvořit HTML stránku s jedním inputem
 2) zadám do ní klíčové slovní spojení
